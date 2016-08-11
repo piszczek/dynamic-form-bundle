@@ -20,37 +20,40 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('dynamic_form');
+        $rootNode = $treeBuilder->root('fields');
 
         $rootNode
             ->useAttributeAsKey('name')
             ->prototype('array')
-                ->useAttributeAsKey('field')
-                ->prototype('array')
-                    ->children()
-                        ->booleanNode('enabled')
-                            ->defaultFalse()
-                        ->end()
+                ->children()
+                    ->arrayNode('form')
+                        ->children()
+                            ->booleanNode('enabled')
+                                ->defaultFalse()
+                            ->end()
 
-                        ->scalarNode('type')
-                            ->isRequired()
-                        ->end()
+                            ->scalarNode('type')
+                                ->isRequired()
+                            ->end()
 
-                        ->variableNode('options')
-                        ->end()
+                            ->variableNode('options')
+                            ->end()
 
-                        ->variableNode('transformer')
-                        ->end()
+                            ->variableNode('transformer')
+                            ->end()
 
-                        ->variableNode('validation')
-                        ->end()
+                            ->variableNode('validation')
+                            ->end()
 
-                        ->scalarNode('data_provider')
-                        ->end()
+                            ->scalarNode('data_provider')
+                            ->end()
 
-                        ->scalarNode('help_message_provider')
+                            ->scalarNode('help_message_provider')
+                            ->end()
                         ->end()
                     ->end()
+                    ->variableNode('type')->end()
+                    ->variableNode('length')->end()
                 ->end()
             ->end()
         ;

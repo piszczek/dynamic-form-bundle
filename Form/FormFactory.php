@@ -4,11 +4,14 @@ namespace Linio\DynamicFormBundle\Form;
 
 use Doctrine\Common\Util\Inflector;
 use Linio\DynamicFormBundle\DataProvider;
+use Linio\DynamicFormBundle\DependencyInjection\Configuration;
 use Linio\DynamicFormBundle\HelpMessageProvider;
 use Linio\DynamicFormBundle\Exception\NonExistentFormException;
 use Linio\DynamicFormBundle\Exception\NotExistentDataProviderException;
+use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory as SymfonyFormFactory;
 use Symfony\Component\Form\FormInterface;
@@ -98,7 +101,27 @@ class FormFactory
     public function createForm($key, $data = [], $options = [], $name = null)
     {
         if (!isset($this->configuration[$key])) {
-            $this->configuration[$key] = $key::getYamlConfiguration();
+            $yamlConfiguration = $key::getYamlConfiguration();
+            $yamlConfiguration = reset($yamlConfiguration);
+
+            if (isset($yamlConfiguration['fields'])) {
+//                $fields = $yamlConfiguration['fields'];
+//                $processor = new Processor();
+//                $configurator = new Configuration();
+//
+//                $conf = $processor->processConfiguration($configurator, [$fields]);
+
+                $configuration = array_map(function($value) {
+                    if (isset($value['form'])) {
+                        return $value['form'];
+                    } else {
+                        return null;
+                    }
+                }, $yamlConfiguration['fields']);
+
+
+                $this->configuration[$key] = $configuration;
+            }
         }
 
 
