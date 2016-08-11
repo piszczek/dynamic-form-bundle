@@ -91,14 +91,14 @@ class FormFactory
     }
 
     /**
-     * @param string $key     The key of the Form in the form configuration
-     * @param array  $data
-     * @param array  $options
-     * @param string $name    An name for the form. If empty, the key will be used
-     *
+     * @param string $key The key of the Form in the form configuration
+     * @param int $step
+     * @param array $data
+     * @param array $options
+     * @param string $name An name for the form. If empty, the key will be used
      * @return FormInterface
      */
-    public function createForm($key, $data = [], $options = [], $name = null)
+    public function createForm($key, $step = 0, $builder, $data = [], $options = [], $name = null)
     {
         if (!isset($this->configuration[$key])) {
             $yamlConfiguration = $key::getYamlConfiguration();
@@ -111,8 +111,8 @@ class FormFactory
 //
 //                $conf = $processor->processConfiguration($configurator, [$fields]);
 
-                $configuration = array_map(function($value) {
-                    if (isset($value['form'])) {
+                $configuration = array_map(function ($value) use ($step) {
+                    if (isset($value['form']) && isset($value['step']) && $value['step'] == $step) {
                         return $value['form'];
                     } else {
                         return null;
@@ -125,7 +125,7 @@ class FormFactory
         }
 
 
-        return $this->createBuilder($key, $data, $options, $name)->getForm();
+        return $this->createBuilder($key, $builder, $data, $options, $name)->getForm();
     }
 
     /**
@@ -140,13 +140,13 @@ class FormFactory
      *
      * @throws NonExistentFormException
      */
-    public function createBuilder($key, $data = [], $options = [], $name = null)
+    public function createBuilder($key, $builder, $data = [], $options = [], $name = null)
     {
         if (!isset($this->configuration[$key])) {
             throw new NonExistentFormException(sprintf('The form "%s" was not found.', $key));
         }
 
-        $formBuilder = $this->formFactory->createNamedBuilder($name ?: str_replace($key, '/', '_'), FormType::class, $data, $options);
+        $formBuilder = $builder;//$this->formFactory->createNamedBuilder($name ?: str_replace($key, '/', '_'), FormType::class, $data, $options);
 
         if (isset($this->eventSubscribers[$key])) {
             foreach ($this->eventSubscribers[$key] as $eventSubscriber) {
