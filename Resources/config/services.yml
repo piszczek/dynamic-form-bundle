@@ -3,7 +3,7 @@ services:
         class: Linio\DynamicFormBundle\Form\FormFactory
         calls:
             - [setFormFactory, ["@form.factory"]]
-            - [setConfiguration, ["%dynamic_form.configuration%"]]
+#            - [setConfiguration, ["%dynamic_form.configuration%"]]
 
     dynamic_form.formly_mapper:
         class: Linio\DynamicFormBundle\FormlyMapper\FormlyMapper
